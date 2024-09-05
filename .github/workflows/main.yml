@@ -51,12 +51,23 @@ jobs:
           echo "Saving Docker image..."
           docker save web-reporting:latest -o web-reporting-latest.tar
 
+      - name: Upload Docker Image as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-reporting-latest
+          path: web-reporting-latest.tar
+
   push:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Download Docker Image Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-reporting-latest
 
       - name: Set up AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -69,7 +80,7 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
 
-      - name: Load Docker Image from Build Step
+      - name: Load Docker Image from Artifact
         run: |
           echo "Loading Docker image..."
           docker load --input web-reporting-latest.tar
@@ -113,4 +124,3 @@ jobs:
         uses: cycjimmy/semantic-release-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}  # If you're publishing a package to npm
