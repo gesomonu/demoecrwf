@@ -103,14 +103,22 @@ jobs:
 
       - name: Tag Docker Image
         run: |
-          IMAGE_TAG=${{ steps.version.outputs.version }}
-          if [ -z "$IMAGE_TAG" ]; then
-            IMAGE_TAG="v0.1.0"
-          fi
-          IMAGE_TAG=${{ steps.version.outputs.version }}
-          echo "Tagging Docker image with version: $IMAGE_TAG"
-          docker tag web-reporting:latest ${{ secrets.ECR_URI }}:latest
-          docker tag web-reporting:latest ${{ secrets.ECR_URI }}:$IMAGE_TAG
+           IMAGE_TAG=${{ steps.version.outputs.version }}
+           if [ -z "$IMAGE_TAG" ]; then
+             IMAGE_TAG="v0.1.0"  # Set default version if the output version is not available
+           fi
+           echo "Tagging Docker image with version: $IMAGE_TAG"
+           docker tag web-reporting:latest ${{ secrets.ECR_URI }}:latest
+           docker tag web-reporting:latest ${{ secrets.ECR_URI }}:$IMAGE_TAG
+        # run: |
+        #   IMAGE_TAG=${{ steps.version.outputs.version }}
+        #   if [ -z "$IMAGE_TAG" ]; then
+        #     IMAGE_TAG="v0.1.0"
+        #   fi
+        #   IMAGE_TAG=${{ steps.version.outputs.version }}
+        #   echo "Tagging Docker image with version: $IMAGE_TAG"
+        #   docker tag web-reporting:latest ${{ secrets.ECR_URI }}:latest
+        #   docker tag web-reporting:latest ${{ secrets.ECR_URI }}:$IMAGE_TAG
 
       - name: Push Docker Image to ECR
         run: |
