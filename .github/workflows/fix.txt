@@ -1,0 +1,11 @@
+echo "Tagging Docker image with version: $IMAGE_TAG"
+docker tag myimage:$IMAGE_TAG
+
+
+# Assuming 'version' is a placeholder for your version number
+IMAGE_TAG="myusername/myrepo:${version}"
+docker tag source_image:$IMAGE_TAG
+
+# Echo for debugging purposes - see what the ECR URI and tags look like
+  echo "ECR URI: ${{ secrets.ECR_URI }}"
+  echo "Tags: latest, $IMAGE_TAG"
