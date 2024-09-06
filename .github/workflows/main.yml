@@ -98,32 +98,15 @@ jobs:
           # Check if the version is empty and set a fallback version if necessary
           if [ -z "${{ steps.version.outputs.version }}" ]; then
             echo "No version found from semantic-release, setting fallback version"
-            echo "::set-output name=version::v0.1.0"
+            echo "version=v0.1.0" >> $GITHUB_OUTPUT
           fi
-
-      - name: Tag Docker Image
-        run: |
           IMAGE_TAG=${{ steps.version.outputs.version }}
           if [ -z "$IMAGE_TAG" ]; then
-          IMAGE_TAG="v0.1.0"  # Default tag if none provided
+            IMAGE_TAG="v0.1.0"
           fi
-
-          # Debug output to check values
-          echo "Repository URI: ${{ secrets.ECR_URI }}"
           echo "Tagging Docker image with version: $IMAGE_TAG"
-
-          # Docker tagging commands
           docker tag web-reporting:latest ${{ secrets.ECR_URI }}:latest
           docker tag web-reporting:latest ${{ secrets.ECR_URI }}:$IMAGE_TAG
-        # run: |
-        #   IMAGE_TAG=${{ steps.version.outputs.version }}
-        #   if [ -z "$IMAGE_TAG" ]; then
-        #     IMAGE_TAG="v0.1.0"
-        #   fi
-        #   IMAGE_TAG=${{ steps.version.outputs.version }}
-        #   echo "Tagging Docker image with version: $IMAGE_TAG"
-        #   docker tag web-reporting:latest ${{ secrets.ECR_URI }}:latest
-        #   docker tag web-reporting:latest ${{ secrets.ECR_URI }}:$IMAGE_TAG
 
       - name: Push Docker Image to ECR
         run: |
