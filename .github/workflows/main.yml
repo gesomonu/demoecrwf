@@ -94,6 +94,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Ensure Version Tag is Set
+        id: set_version
         run: |
           # Check if the version is empty and set a fallback version if necessary
           if [ -z "${{ steps.version.outputs.version }}" ]; then
@@ -110,6 +111,7 @@ jobs:
 
       - name: Push Docker Image to ECR
         run: |
+          IMAGE_TAG=${{ steps.set_version.outputs.version }}
           echo "Pushing Docker image to ECR..."
           docker push ${{ secrets.ECR_URI }}:latest
           docker push ${{ secrets.ECR_URI }}:$IMAGE_TAG
