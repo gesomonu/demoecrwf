@@ -112,11 +112,14 @@ jobs:
         run: |
           echo "Pushing Docker image to ECR..."
           docker push ${{ secrets.ECR_URI }}:latest
-          docker push ${{ secrets.ECR_URI }}:${{ steps.version.outputs.version }}
+          docker push ${{ secrets.ECR_URI }}:$IMAGE_TAG
 
       - name: Write image definitions
         run: |
           IMAGE_TAG=${{ steps.version.outputs.version }}
+          if [ -z "$IMAGE_TAG" ]; then
+            IMAGE_TAG="v0.1.0"
+          fi 
           echo "Writing image definitions..."
           printf '[{"name":"web","imageUri":"%s"}]' ${{ secrets.ECR_URI }}:$IMAGE_TAG > imagedefinitions.json
 
